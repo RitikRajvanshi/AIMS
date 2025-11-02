@@ -1,0 +1,39 @@
+{
+  "name": "backend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.1",
+    "child_process": "^1.0.2",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "emailjs": "^2.2.0",
+    "exceljs": "^4.4.0",
+    "express": "~4.16.1",
+    "fs": "^0.0.1-security",
+    "generate-password": "^1.7.0",
+    "http-errors": "~1.6.3",
+    "https": "^1.0.0",
+    "https-proxy-agent": "^5.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.6.0",
+    "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "node-localstorage": "^2.2.1",
+    "nodemailer": "^6.9.4",
+    "nodemon": "^2.0.20",
+    "pg": "^8.9.0",
+    "pug": "2.0.0-beta11"
+  }
+}

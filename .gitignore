@@ -1,0 +1,14 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore environment files
+.env
+
+# Ignore rar files
+*.rar
+
+# Ignore everything inside files/invoice
+files/invoice/*
+
+# But keep this file (see next step)
+!files/invoice/.gitkeep
