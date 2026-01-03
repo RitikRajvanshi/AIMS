@@ -175,7 +175,7 @@ cron.schedule('0 11 * * *', async () => {
     from: 'apvaims@apvtechnologies.com',
     to: mailConfig.to,
     cc: mailConfig.info,
-    subject: '⚠️ Lifecycle Expiry Alert - Action Required',
+    subject: `⚠️ Lifecycle Expiry Alert - Action Required ${process.env.ENVIRONMENT_STATUS}`,
     html: message
   };
 
