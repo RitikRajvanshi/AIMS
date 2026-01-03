@@ -695,10 +695,15 @@ router.post('/makePurchaseOrder', async (req, res) => {
 
 
 router.post('/updatePurchaseOrder', (req, res) => {
+    console.log(req.body, "updatePurchaseOrder");
     const gst_in_percent = + req.body.gst_in_percent;
 
-    const { issue_date, expected_date, product_id, unit_price, quantity, sub_total, discount_in_rs, total, description, sent_by, gst_calculation, received_quantity, id, purpose, expected_user } = req.body
+    let { issue_date, expected_date, product_id, unit_price, quantity, sub_total, discount_in_rs, total, description, sent_by, gst_calculation, received_quantity, id, purpose, expected_user } = req.body
     console.log(req.body);
+
+    if (!received_quantity || received_quantity === 0) {
+        received_quantity = quantity;
+    }
 
     const query = `UPDATE purchase_item set 
     issue_date = $1  , expected_date = $2 ,product_id = $3 ,unit_price = $4 , 
@@ -946,13 +951,6 @@ router.post('/updatesentApprovedpurchaseorder', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error!' });
     }
 
-    // // db.query(`SELECT * FROM update_sent_approvedpurchaseorder('${purchase_id}')`, (err, result) => {
-    // db.query(`SELECT * FROM update_sent_approvedpurchaseorder($1)`, [purchase_id], (err, result) => {
-    //     if (err) {
-    //         throw err;
-    //     }
-    //     res.status(200).json(result.rows);
-    // })
 })
 
 // router.get('/approvePurchaseOrder/:purchase_id', async (req, res) => {
@@ -2882,6 +2880,9 @@ router.post('/sendgatepassforapproval', async (req, res) => {
             html: generateEmailHTML(gatepassdata.rows)
         };
 
+        console.log(gatepassdata.rows, "gatepassdata.rows");
+        
+
         // Function to generate HTML content for the email
         function generateEmailHTML(purchases) {
             let html = `
@@ -2912,7 +2913,7 @@ router.post('/sendgatepassforapproval', async (req, res) => {
 
             purchases.forEach((purchase, index) => {
                 // Format dates using Moment.js
-                let formatedoutdate = moment(purchase.out_date).format('YYYY-MM-DD');
+                let formatedoutdate = moment(purchase.out_date).format('DD-MM-YYYY');
                 html += `
         <tr>
             <td style="border: 1px solid #000; padding: 3px;  color: #000000;">${index + 1}</td>

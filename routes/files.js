@@ -820,11 +820,12 @@ router.post('/exportToexcel', async (req, res) => {
 
     //for currency change reports
     if(currencySummaryText) {
+    const LRM = "\u200E"; // Left-to-Right Mark
     const currencyRowNumber = numberOfRows  - 2;
     const currencyStart = `A${currencyRowNumber}`;
     const currencyEnd = `${lastColumnLetter}${currencyRowNumber}`;
     workSheet.mergeCells(`${currencyStart}:${currencyEnd}`);
-    workSheet.getCell(currencyStart).value = `Total Amount:  ${currencySummaryText}`;
+    workSheet.getCell(currencyStart).value = `Total Amount:  ${LRM} ${currencySummaryText}`;
     workSheet.getCell(currencyStart).font = { bold: true, size: 14,color: { argb: 'FFDC3562' } };
     workSheet.getCell(currencyStart).alignment = { vertical: 'middle', horizontal: 'right' };
     }

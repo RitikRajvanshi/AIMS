@@ -573,6 +573,8 @@ router.get('/getpurchaseorderData', (req, res) => {
     if (err) {
       throw err;
     }
+
+    // console.log(result.rows, "get_purchaseorderdata");
     res.status(200).json(result.rows);
   });
 });
@@ -1078,7 +1080,7 @@ router.post('/getpurchaseorderDatabydate', (req, res) => {
 router.post('/getreportpurchaseorderDatabydate', (req, res) => {
   let start_date = req.body.start_date;
   let end_date = req.body.end_date;
-  
+
   db.query(`SELECT * FROM get_reportpurchaseorderdata_bycreated_date('${start_date}','${end_date}')`, (err, results) => {
     if (err) {
       throw err;
@@ -1183,7 +1185,7 @@ router.get('/getcountofPurchases', (req, res) => {
 });
 
 router.get('/getpurchasedataacceptorreject', (req, res) => {
-  db.query(`SELECT po.purchase_id , po.is_sent , po.sent_by , po.sent_date , po.created_by , po.created_date, po.supplier_id , po.po_approval_date, su.supplier_name
+  db.query(`SELECT po.purchase_id , po.is_sent , po.sent_by , po.sent_date , po.created_by , po.created_date, po.supplier_id , po.po_approval_date, su.supplier_name,su.category
   ,po.invoice_no, po.modified_date, po.filename
   FROM  purchase_order as po 
    join supplier as su on su.supplier_id = po.supplier_id where po.is_sent>1 order by purchase_id desc`, (err, result) => {
@@ -1756,11 +1758,24 @@ order by ts.transfer_date  desc, ts.transfer_id desc;`
 
 
 router.get('/getScrapedgiftedsoldoutdatafromitems', (req, res) => {
-  const query = `select DISTINCT on(item_id)it.item_id, it.item_code, it.item_name, it.location_id, loc.location_name ,ts.transfer_date,ts.transfer_by, us.user_name from items it
+  // const query = `select DISTINCT on(item_id)it.item_id, 
+  // it.item_code, it.item_name, it.location_id, loc.location_name,
+  // ts.transfer_date,ts.transfer_by, us.user_name from items it
+  // left join transfer_stock ts on it.item_id = ts.item_id
+  // left join "location" loc on loc.location_id = it.location_id
+  // left join users us on us.user_id = ts.transfer_by::integer
+  // where it.location_id in(4,5,6)
+  // ORDER BY item_id DESC`;
+
+  const query = `select DISTINCT on(item_id)it.item_id, 
+it.purchase_id, po.invoice_date , po.created_date as purchase_date,
+  it.item_code, it.item_name, it.location_id, loc.location_name,
+  ts.transfer_date,ts.transfer_by, us.user_name from items it
   left join transfer_stock ts on it.item_id = ts.item_id
   left join "location" loc on loc.location_id = it.location_id
+  left join purchase_order po on po.purchase_id = it.purchase_id
   left join users us on us.user_id = ts.transfer_by::integer
-  where it.location_id in(4,5,6)
+  where it.location_id in(4,5,6,7,8)
   ORDER BY item_id DESC`;
 
   db.query(query, (err, result) => {
@@ -2209,6 +2224,48 @@ router.get('/getallCurrency', async (req, res) => {
     console.log(error);
     res.status(500).json(error);
   }
+})
+
+router.get('/getPurchaseIdsnotinItems', async(req, res)=>{
+  try {
+//     const query = `SELECT
+//     t.purchase_id
+// FROM (
+//     SELECT 
+//         TRIM(pi.purchase_id) AS purchase_id,
+//         MIN(pi.id) AS min_id
+//     FROM purchase_item pi
+//     LEFT JOIN items it
+//           ON TRIM(it.purchase_id) = TRIM(pi.purchase_id)
+//     WHERE 
+//          TRIM(pi.purchase_id) IS NOT NULL
+//      AND TRIM(pi.purchase_id) <> ''
+//      AND it.purchase_id IS NULL
+//     GROUP BY TRIM(pi.purchase_id)
+// ) AS t
+// ORDER BY t.min_id`;
+
+    const query = `SELECT DISTINCT TRIM(po.purchase_id) AS purchase_id
+FROM purchase_order po
+LEFT JOIN items it
+       ON TRIM(it.purchase_id) = TRIM(po.purchase_id)
+WHERE 
+    po.is_sent = 2
+    AND TRIM(po.purchase_id) IS NOT NULL
+    AND TRIM(po.purchase_id) <> ''
+    AND it.purchase_id IS NULL
+ORDER BY TRIM(po.purchase_id);`
+
+   const result = await db.query(query);
+   res.status(200).json(result.rows);
+    
+  } catch (error) {
+    console.error(error, 'Error at getPurchaseIdsnotinItems');
+    res.status(500).json(error);
+  }
+
+
+
 })
 
 
